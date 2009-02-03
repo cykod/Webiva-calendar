@@ -58,9 +58,6 @@ class Calendar::ManageController < ModuleController
       #DataCache.put_content('Calendar','Admin',content_target,@blocks)
     #end
     
-    if params[:do_it]
-     eval(params[:do_it])
-    end
     
     cms_css('/components/calendar/stylesheets/manage_calendar.css')
     render :partial => 'calendar' if display

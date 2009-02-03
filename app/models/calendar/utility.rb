@@ -356,7 +356,7 @@ class Calendar::Utility
       week.each do |day|
         if day[:slots]
           slot_offset=0
-          slot_width = total_width / day[:slots].length 
+          slot_width = (total_width.to_f / day[:slots].length.to_i).floor.to_i
           day[:slots].each do |slot_id,slot|
             if slot
               day[:slots][slot_id] = slot.collect do |block|

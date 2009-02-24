@@ -3,7 +3,7 @@
 <% remote_cms_form_for :booking, @booking, :html => {:class => 'admin_form'},:update => 'RB_window', :url => { :action => 'edit_booking' } do |f| -%>
 <%= f.header 'Please select a site user or enter a recipient name' %>
 <%= f.end_user_selector :recipient_name, :description => 'Who this booking is for',:label => 'Booking for', :id_field => 'end_user_id', :noun => 'User' %>
-<% if @booking.end_user_id %>
+<% if @booking.end_user %>
   <% f.custom_field 'View User' do -%>
     <%= link_to "See %s's Account" / @booking.end_user.first_name.to_s, :controller => '/members', :action => 'view', :path => [ @booking.end_user_id ] %>
   <% end -%>

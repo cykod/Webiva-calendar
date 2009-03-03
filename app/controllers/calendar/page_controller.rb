@@ -57,6 +57,8 @@ class Calendar::PageController  < ParagraphController
   
   return if handle_module_paragraph_update(@options)
   
+  @products = Shop::ShopProduct.select_options
+  
   @pages = SiteNode.page_options()
   @slots = [[ '--Select Slot--','']] + CalendarSlotGroup.find(:all,:order => 'calendar_slot_groups.name',:include => :calendar_slots).collect { |sg|
       [ " #{sg.name} Group (#{sg.calendar_slots.length})", "Group#{sg.id}" ]
@@ -65,9 +67,11 @@ class Calendar::PageController  < ParagraphController
  end
  
  class BookingOptions < HashModel
-  default_options :booking_minutes => 60, :minutes_hold_time => 15, :maximum_unconfirmed_sessions => 10, :slot_id => nil, :calendar_page_id => nil, :checkout_page_id => nil, :booking_credit_product_id => nil
+  default_options :booking_minutes => 60, :minutes_hold_time => 15, :maximum_unconfirmed_sessions => 10, :slot_id => nil, :calendar_page_id => nil, :checkout_page_id => nil, :booking_credit_product_id => nil,:auto_book => false, :auto_book_page_id => nil
   
-  integer_options :booking_minutes, :minutes_hold_time, :maximum_unconfirmed_sessions, :calendar_page_id, :checkout_page_id, :booking_credit_product_id
+  boolean_options :auto_book
+  
+  integer_options :booking_minutes, :minutes_hold_time, :maximum_unconfirmed_sessions, :calendar_page_id, :checkout_page_id, :booking_credit_product_id, :auto_book_page_id
   
   validates_presence_of :slot_id, :booking_minutes, :minutes_hold_time, :maximum_unconfirmed_sessions
  end

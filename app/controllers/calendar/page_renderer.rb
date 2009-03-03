@@ -490,6 +490,14 @@ class Calendar::PageRenderer < ParagraphRenderer
       # if expired and no longer available -> remove them
       session[:calendar] ||= {}
       session[:calendar][:booking_ids] ||= []
+      
+      if options.auto_book && !editor?
+        if confirm_all_bookings
+          redirect_paragraph :site_node => options.auto_book_page_id
+          return
+        end
+      end      
+      
       return if handle_booking(options)
       
       if session[:calendar][:booking_ids].length > 0
@@ -597,25 +605,31 @@ class Calendar::PageRenderer < ParagraphRenderer
 #        flash[:shop_product_added] = prd.id
 #        return true
       elsif params[:calendar_confirm_bookings] == 'credit'
-        cu = CalendarUser.user(myself)
-        bookings_to_confirm = []
-        if cu.credits > bookings_to_confirm.length
-          DomainModel.transaction do
-            session[:calendar][:booking_ids].each do |booking_id|
-              booking = CalendarBooking.find_by_id_and_confirmed(booking_id,0,:lock => true)
-              bookings_to_confirm << booking if booking
-            end
-            CalendarUser.update_credits(myself,-bookings_to_confirm.length ,"Booked:" + bookings_to_confirm.map(&:time_description).join(", "))
-            bookings_to_confirm.each do |bk|
-              bk.update_attribute(:confirmed,1)
-            end
-            flash[:booking_booked] = bookings_to_confirm.length
-          end
-        end
+        return confirm_all_bookings
       end
     end
     return false
   
+  end
+  
+  def confirm_all_bookings
+    DomainModel.transaction do
+      cu = CalendarUser.user(myself)
+      bookings_to_confirm = []
+      session[:calendar][:booking_ids].each do |booking_id|
+        booking = CalendarBooking.find_by_id_and_confirmed(booking_id,0,:lock => true)
+        bookings_to_confirm << booking if booking
+      end
+      if cu.credits >= bookings_to_confirm.length && bookings_to_confirm.length > 0
+        CalendarUser.update_credits(myself,-bookings_to_confirm.length ,"Booked:" + bookings_to_confirm.map(&:time_description).join(", "))
+        bookings_to_confirm.each do |bk|
+          bk.update_attribute(:confirmed,1)
+        end
+        flash[:booking_booked] = bookings_to_confirm.length
+        return true
+      end
+    end
+    return false
   end
   
   include Shop::CartUtility
@@ -678,6 +692,10 @@ class Calendar::PageRenderer < ParagraphRenderer
     end
   
     bookings = CalendarBooking.find(:all,:conditions => [ 'confirmed = 1 AND end_user_id=? AND booking_on >= DATE(NOW())',myself.id ], :order => 'booking_on')
+    
+    if flash[:booking_booked]
+          flash.now[:calendar_booking_notice] = "Your #{Calendar::Utility.options.booking_name} has been booked"
+    end
   
     cu = CalendarUser.user(myself)
     data = {

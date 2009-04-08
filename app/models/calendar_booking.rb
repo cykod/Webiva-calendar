@@ -122,7 +122,7 @@ class CalendarBooking < DomainModel
     Calendar::Utility.options.booking_name + " " + self.booking_on.strftime("%A %m/%d/%Y".t)
   end
   
-  def cart_details(options={})
+  def cart_details(options,cart)
     # ignore the start_at and end_at for bookings
     dsc = sprintf("%s to %s".t,
                   Calendar::Utility.time_str(self.start_time),Calendar::Utility.time_str(self.end_time))
@@ -138,7 +138,9 @@ class CalendarBooking < DomainModel
   end
 
   
-  def cart_price(options,currency,user)
+  def cart_price(options,cart)
+    currency = cart.currency
+    user = cart.user
     opts = Calendar::Utility.options
     
     if self.end_user && opts.member_classes.include?(self.end_user.user_class_id.to_s)
@@ -148,7 +150,7 @@ class CalendarBooking < DomainModel
     end
   end
   
-  def cart_limit(options,user)
+  def cart_limit(options,cart)
     if !self.confirmed? && (self.valid_until > Time.now || Calendar::Utility.booking_availability?(self))
       1
     else

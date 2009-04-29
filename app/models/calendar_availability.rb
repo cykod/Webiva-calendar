@@ -52,7 +52,7 @@ class CalendarAvailability < DomainModel
  def first_date(starting_day)
   case availability_type
   when 'once'
-    (starting_day < start_on) ? start_on : nil
+    (starting_day < start_on.to_time) ? start_on.to_time : nil
   when 'daily'
     starting_day
   when 'weekdays'

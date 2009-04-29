@@ -41,7 +41,7 @@ class CalendarAvailability < DomainModel
  
  def between(start_day,end_day,&block) 
   cur_day = first_date(start_day)
-  while(cur_day && cur_day <= end_day)
+  while(cur_day && cur_day <= end_day && (!self.end_on || cur_day < self.end_on.to_time))
     yield cur_day
     
     cur_day = first_date(cur_day.tomorrow)

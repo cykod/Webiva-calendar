@@ -78,9 +78,9 @@ class CalendarBooking < DomainModel
   def after_create
     if !self.apply_credits.blank? && self.apply_credits != 'off' && self.end_user
       CalendarUser.update_credits(self.end_user,-1,"Admin Booking:" + self.time_description, :admin_user_id => self.admin_user_id)
-    elsif confirmed? && self.admin_user_id 
+    elsif confirmed? && self.admin_user_id  && self.end_user
       CalendarUser.update_credits(self.end_user,0,"Admin Booking (No Credits):" + self.time_description, :admin_user_id => self.admin_user_id)
-    elsif !confirmed? && !self.admin_user_id
+    elsif !confirmed? && !self.admin_user_id  && self.end_user
       CalendarUser.update_credits(self.end_user,0,"Added to Cart (Unconfirmed):" + self.time_description)
     end 
   end

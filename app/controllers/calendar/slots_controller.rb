@@ -62,7 +62,7 @@ class Calendar::SlotsController < ModuleController
 
   
     @active_table_output = availabilities_table_generate params, :order => 'start_on', :conditions =>
-                ['end_on > NOW() OR end_on IS NULL AND calendar_slot_id = ?',params[:path][0]]
+                ['(end_on > NOW() OR end_on IS NULL) AND calendar_slot_id = ?',params[:path][0]]
                 
     render :partial => 'availabilities_table' if display
   end

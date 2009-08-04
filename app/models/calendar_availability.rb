@@ -54,7 +54,7 @@ class CalendarAvailability < DomainModel
   when 'once'
     (starting_day <= start_on.to_time) ? start_on.to_time : nil
   when 'daily'
-    starting_day
+    (starting_day <= start_on.to_time) ? start_on.to_time : starting_day
   when 'weekdays'
     dow = starting_day.strftime("%w").to_i
     if(dow == 0) # Sunday

@@ -41,7 +41,7 @@ class CalendarAvailability < DomainModel
  
  def between(start_day,end_day,&block) 
   cur_day = first_date(start_day)
-  while(cur_day && cur_day <= end_day && (!self.end_on || cur_day < self.end_on.to_time))
+   while(cur_day && cur_day <= end_day && (!self.end_on || cur_day < (self.end_on.to_time+1.days)))
     yield cur_day
     
     cur_day = first_date(cur_day.tomorrow)
@@ -52,7 +52,7 @@ class CalendarAvailability < DomainModel
  def first_date(starting_day)
   case availability_type
   when 'once'
-    (starting_day < start_on.to_time) ? start_on.to_time : nil
+    (starting_day <= start_on.to_time) ? start_on.to_time : nil
   when 'daily'
     starting_day
   when 'weekdays'

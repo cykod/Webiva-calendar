@@ -48,12 +48,13 @@ class Calendar::Utility
       end
     end
     availabilities = CalendarAvailability.find(:all,
-                :conditions => ['start_on <= ? AND (end_on IS NULL OR end_on >= ?)',visible_days[:end],visible_days[:start] ],
+                :conditions => ['start_on <= ? AND (end_on IS NULL OR end_on >= ?)',visible_days[:end].to_date,visible_days[:start].to_date ],
                 :include => :calendar_slot)
     now = Time.now.at_beginning_of_day 
     start_day = (visible_days[:start] < now) ? now : visible_days[:start]
 
     availabilities.each do |av|
+     # raise av.inspect if av.id == 27
       av.between(start_day,visible_days[:end]) do |day|
         day = day.at_midnight
         date_index[day][:slots] ||= {}

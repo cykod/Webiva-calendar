@@ -55,7 +55,7 @@ class Calendar::SlotsController < ModuleController
   end
                 
   def display_availabilities_table(display=true)
-  
+    @slot ||= CalendarSlot.find(params[:path][0]) 
   if(request.post? && params[:table_action] && params[:availability].is_a?(Hash)) 
     CalendarAvailability.destroy(params[:availability].keys) if params[:table_action] == 'delete'
    end

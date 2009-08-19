@@ -50,7 +50,7 @@ class CalendarAvailability < DomainModel
  end
  
  def first_date(starting_day)
-  starting_day = starting_day.to_time
+  starting_day = starting_day.to_time.at_midnight
   case availability_type
   when 'once'
     (starting_day <= start_on.to_time) ? start_on.to_time : nil

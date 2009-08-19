@@ -50,12 +50,11 @@ class CalendarAvailability < DomainModel
  end
  
  def first_date(starting_day)
-  starting_day = starting_day.to_time.at_midnight
   case availability_type
   when 'once'
-    (starting_day <= start_on.to_time) ? start_on.to_time : nil
+    (starting_day.to_date <= start_on.to_date) ? start_on.to_time : nil
   when 'daily'
-    (starting_day <= start_on.to_time) ? start_on.to_time : starting_day
+    (starting_day.to_date <= start_on.to_date) ? start_on.to_time : starting_day
   when 'weekdays'
     dow = starting_day.strftime("%w").to_i
     if(dow == 0) # Sunday

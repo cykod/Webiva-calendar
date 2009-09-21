@@ -361,9 +361,12 @@ class Calendar::Utility
 
           day_slot_list =  day[:slots].keys
           slot_list = all_slot_ids.select { |slt| day_slot_list.include?(slt) }
-
+          slot_list += day_slot_list - all_slot_ids
+          
           slot_list.each do |slot_id|
             slot = day[:slots][slot_id]
+
+#          day[:slots].each do |slot_id,slot|
             if slot
               day[:slots][slot_id] = slot.collect do |block|
                 { :x => slot_offset * slot_width,

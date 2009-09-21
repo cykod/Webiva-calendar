@@ -58,7 +58,7 @@ class Calendar::ManageController < ModuleController
       #DataCache.put_content('Calendar','Admin',content_target,@blocks)
     #end
     
-    
+    @slot_ids = CalendarSlot.find(:all,:order => 'name').map(&:id)
     cms_css('/components/calendar/stylesheets/manage_calendar.css')
     render :partial => 'calendar' if display
   end
@@ -105,7 +105,10 @@ class Calendar::ManageController < ModuleController
                                                               :start_time => opts.start_time,
                                                               :end_time => opts.end_time )
     
-    @slot_ids = @spaces[:slots].keys
+    @all_slot_ids = @spaces[:slots].keys
+    @slot_ids = CalendarSlot.find(:all,:order => 'name').map(&:id).select { |slt| @all_slot_ids.include?(slt) }
+    
+
 
     @block_width = (@area_width - 140) / (@slot_ids.length > 0 ? @slot_ids.length : 1 )
     @block_width = 120 if @block_width > 120

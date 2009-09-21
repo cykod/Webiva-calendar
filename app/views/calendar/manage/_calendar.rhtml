@@ -24,7 +24,7 @@
       <% end -%>
       </div>
       <% if day[:slots] -%>
-      <% day[:slots].each do |slot_id,slot| -%>
+      <% day[:slots].each do |slot_id,slot|%>
         <% slot.each do |block| -%>
         <div style='<%= calendar_block_style(block,4,4) %>' title='<%= vh(block[:description]) %>' ></div>
         <% end -%>

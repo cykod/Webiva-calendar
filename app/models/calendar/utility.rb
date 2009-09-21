@@ -54,7 +54,6 @@ class Calendar::Utility
     start_day = (visible_days[:start] < now) ? now : visible_days[:start]
 
     availabilities.each do |av|
-     # raise av.inspect if av.id == 27
       av.between(start_day,visible_days[:end]) do |day|
         day = day.at_midnight
         date_index[day][:slots] ||= {}
@@ -352,13 +351,19 @@ class Calendar::Utility
   
   def self.format_block(blocks,total_width,total_height)
     opts = self.options
-    unit_height = (total_height-2).to_f / (opts.end_time - opts.start_time).to_f 
+    unit_height = (total_height-2).to_f / (opts.end_time - opts.start_time).to_f
+    all_slot_ids = CalendarSlot.find(:all,:order => 'name').map(&:id)
     blocks.each do |week|
       week.each do |day|
         if day[:slots]
           slot_offset=0
           slot_width = (total_width.to_f / day[:slots].length.to_i).floor.to_i
-          day[:slots].each do |slot_id,slot|
+
+          day_slot_list =  day[:slots].keys
+          slot_list = all_slot_ids.select { |slt| day_slot_list.include?(slt) }
+
+          slot_list.each do |slot_id|
+            slot = day[:slots][slot_id]
             if slot
               day[:slots][slot_id] = slot.collect do |block|
                 { :x => slot_offset * slot_width,

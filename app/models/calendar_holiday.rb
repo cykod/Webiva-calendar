@@ -3,7 +3,7 @@
 class CalendarHoliday < DomainModel
 
   has_many :calendar_holiday_slots
-  
+  validates_presence_of :start_on
   
   def calendar_slot_ids
     self.calendar_holiday_slots.collect(&:calendar_slot_id)  
@@ -38,7 +38,7 @@ class CalendarHoliday < DomainModel
     cur_day = start_on.to_time.at_midnight
     cur_day = start_day if(cur_day < start_day)
     
-    end_at = (end_on.to_time || end_day).at_midnight + 1.days
+    end_at = (end_on || end_day).to_time.at_midnight + 1.days
       
     while(cur_day && (cur_day <= end_day) && (cur_day < end_at))
       yield cur_day

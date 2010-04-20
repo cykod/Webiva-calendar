@@ -8,6 +8,8 @@ class Calendar::SlotsController < ModuleController
   cms_admin_paths "content",
                    "Content" =>   { :controller => '/content' },
                    "Appointments" =>  { :controller => '/calendar/manage' },
+                   "Calendar" =>  { :controller => '/calendar/manage' },
+                   "Configure Calendar" => { :action => 'index' },
                    "Configure" => { :action => 'index' },
                    "Slot Groups" => { :action => 'groups' }
 

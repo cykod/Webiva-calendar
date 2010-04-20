@@ -25,10 +25,15 @@ class Calendar::PageController  < ParagraphController
     return if handle_module_paragraph_update(@options)
     
     @days = [[ '--Select a detail page--',nil]] +  SiteNode.page_options()
+
+    @slots = [[ '--Select Slot--','']] + CalendarSlotGroup.find(:all,:order => 'calendar_slot_groups.name',:include => :calendar_slots).collect { |sg|
+      [ " #{sg.name} Group (#{sg.calendar_slots.length})", "Group#{sg.id}" ]
+    } + [[ '---','']] + CalendarSlot.find_select_options(:all,:order => 'name').collect { |elm| [elm[0],elm[1].to_s] }
+ 
   end
 
   class MonthScheduleOptions < HashModel
-      default_options  :display => 'group', :block_width => 70, :block_height => 70, :day_page_id => nil
+      default_options  :display => 'group', :block_width => 70, :block_height => 70, :day_page_id => nil, :slot_id => nil
       
       integer_options :block_width, :block_height, :day_page_id
       
@@ -41,10 +46,15 @@ class Calendar::PageController  < ParagraphController
     return if handle_module_paragraph_update(@options)
     
     @pages = [[ '--Booking page--',nil]] +  SiteNode.page_options()
+
+    @slots = [[ '--Select Slot--','']] + CalendarSlotGroup.find(:all,:order => 'calendar_slot_groups.name',:include => :calendar_slots).collect { |sg|
+      [ " #{sg.name} Group (#{sg.calendar_slots.length})", "Group#{sg.id}" ]
+    } + [[ '---','']] + CalendarSlot.find_select_options(:all,:order => 'name').collect { |elm| [elm[0],elm[1].to_s] }
+ 
   end
   
  class DayScheduleOptions < HashModel
-  default_options :display => 'group', :block_minutes => 60, :signup_length => 60, :block_width => 70, :block_height => 20, :booking_page_id => nil
+  default_options :display => 'group', :block_minutes => 60, :signup_length => 60, :block_width => 70, :block_height => 20, :booking_page_id => nil, :slot_id => nil
   
   integer_options :block_minutes, :block_width, :block_height, :signup_length, :booking_page_id 
   

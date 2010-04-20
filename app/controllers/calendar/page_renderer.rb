@@ -1,3 +1,5 @@
+require 'icalendar'
+
 
 class Calendar::PageRenderer < ParagraphRenderer
 
@@ -7,6 +9,7 @@ class Calendar::PageRenderer < ParagraphRenderer
   paragraph :day_schedule
   paragraph :booking
   paragraph :user_bookings
+  paragraph :ical
   
   feature :calendar_month_schedule, :default_feature => <<-FEATURE
     <cms:calendar>
@@ -653,6 +656,7 @@ class Calendar::PageRenderer < ParagraphRenderer
   def calendar_user_booking_feature(feature,data)
     parser_context = FeatureContext.new do |c|
       now = Time.now
+      c.define_value_tag('ical') { |t| data[:ical] }
       c.define_value_tag('cancellation_hours') { |tag| data[:options].cancellation_hours }
       c.define_value_tag('notice') { |tag| data[:booking_notice] }
       c.define_value_tag('credits') { |tag| data[:credits] }
@@ -703,12 +707,51 @@ class Calendar::PageRenderer < ParagraphRenderer
       :site_node => site_node.node_path,
       :options => options,
       :booking_notice => flash[:calendar_booking_notice],
-      :credits => cu.credits
+      :credits => cu.credits,
+      :ical => cu.ical_hash
     }
     
     feature_output = calendar_user_booking_feature(get_feature('calendar_user_bookings'),data)
 
     render_paragraph :text => feature_output
+  end
+  
+
+  def ical
+    conn_type, ical_hash = page_connection
+
+    cu = CalendarUser.find_by_ical_hash(ical_hash)
+
+    if !cu
+      render_paragraph :text => 'Invalid Calendar'
+      return
+    end
+
+    cal = Icalendar::Calendar.new
+
+    bookings = CalendarBooking.find(:all,:conditions => ['booking_on > ? AND confirmed=1 AND end_user_id=?',Time.now.yesterday.at_midnight,cu.end_user_id],:order => 'booking_on,start_time')
+
+    bookings.each do |booking|
+      event = Icalendar::Event.new
+      event.start = booking.to_time.strftime("%Y%m%dT%H%M%S")
+      event.end = booking.to_end_time.strftime("%Y%m%dT%H%M%S")
+      event.summary = "Appointment at" + " " + booking.time
+      cal.add_event(event)
+    end
+
+    events = EventsBooking.find(:all,:conditions => ['events_events.event_on > ? AND confirmed=1 AND end_user_id=?', Time.now.yesterday.at_midnight,cu.end_user_id],:joins => :events_event )
+
+    events.each do |booking|
+      event = Icalendar::Event.new
+      event.start = booking.events_event.event_starts_at.strftime("%Y%m%dT%H%M%S")
+      event.end = booking.events_event.event_ends_at.strftime("%Y%m%dT%H%M%S")
+      event.summary = booking.events_event.short_description
+      cal.add_event(event)
+    end
+
+    data_paragraph :data => cal.to_ical,:type => 'text/calendar', :disposition => 'inline; filename=calendar.cvs', :filename => 'calendar.vcs'
+
+
   end
   
 end

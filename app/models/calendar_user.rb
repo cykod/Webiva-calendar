@@ -7,6 +7,12 @@ class CalendarUser < DomainModel
   validates_presence_of :end_user_id
   validates_uniqueness_of :end_user_id
   
+  def before_save
+   self.ical_hash = CalendarUser.generate_hash if self.ical_hash.blank?
+    
+  end
+
+
   def self.user(usr,options = {})
      cu = self.find_by_end_user_id(usr.id,:lock => options[:lock])
      if !cu

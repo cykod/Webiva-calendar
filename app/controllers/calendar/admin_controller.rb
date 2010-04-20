@@ -16,6 +16,13 @@ class Calendar::AdminController < ModuleController
 
   register_handler :members, :view,  "Calendar::ManageController"
 
+   module_for :ical, 'Event Ical', :description => 'Add ical links to your site'
+
+  
+   def ical
+     render :nothing => true
+   end
+
   protected
  def self.get_calendar_info
       [

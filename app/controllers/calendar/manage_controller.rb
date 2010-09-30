@@ -59,7 +59,7 @@ class Calendar::ManageController < ModuleController
     #end
     
     @slot_ids = CalendarSlot.find(:all,:order => 'name').map(&:id)
-    cms_css('/components/calendar/stylesheets/manage_calendar.css')
+    require_css('/components/calendar/stylesheets/manage_calendar.css')
     render :partial => 'calendar' if display
   end
   
@@ -107,8 +107,6 @@ class Calendar::ManageController < ModuleController
     
     @all_slot_ids = @spaces[:slots].keys
     @slot_ids = CalendarSlot.find(:all,:order => 'name').map(&:id).select { |slt| @all_slot_ids.include?(slt) }
-    
-
 
     @block_width = (@area_width - 140) / (@slot_ids.length > 0 ? @slot_ids.length : 1 )
     @block_width = 120 if @block_width > 120

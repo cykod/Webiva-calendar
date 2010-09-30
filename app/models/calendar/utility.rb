@@ -65,7 +65,7 @@ class Calendar::Utility
     
     # Get holidays
     holidays = CalendarHoliday.find(:all,
-                :conditions => ['start_on <= ? AND (end_on IS NULL OR end_on >= ?)',visible_days[:end],visible_days[:start] ],
+                :conditions => ['start_on <= ? AND (end_on IS NULL OR end_on >= ?)',visible_days[:end].to_date,visible_days[:start].to_date ],
                 :include => :calendar_holiday_slots)
     holidays.each do |holiday|
       holiday.between(start_day,visible_days[:end]) do |day|
@@ -80,7 +80,7 @@ class Calendar::Utility
     
     # Get Bookings
     bookings = CalendarBooking.find(:all,:include => :calendar_slot,
-                :conditions => ['(booking_on BETWEEN ? AND ?) AND (confirmed=1 OR valid_until > NOW())',visible_days[:start],visible_days[:end] ])
+                :conditions => ['(booking_on BETWEEN ? AND ?) AND (confirmed=1 OR valid_until > NOW())',visible_days[:start].to_date,visible_days[:end].to_date ])
     bookings.each do |booking|
       booking_on = booking.booking_on.to_time
       date_index[booking_on][:slots] ||= {}
@@ -88,7 +88,7 @@ class Calendar::Utility
       date_index[booking_on][:slots][booking.calendar_slot_id][:book] ||= []
       date_index[booking_on][:slots][booking.calendar_slot_id][:book] << [ booking.start_time,booking.end_time, booking ]
     end
-    
+
     visible_days[:days]
   end
   

@@ -1,15 +1,8 @@
 
 
 
-begin
-  load_paths.each do |path|
-    ActiveSupport::Dependencies.load_once_paths.delete(path)
-  end
-rescue Exception => e
-  load_paths.each do |path|
-    Dependencies.load_once_paths.delete(path)
-  end
-end
-# Gem icalendar
+webiva_remove_load_paths(__FILE__)
+
+config.gem 'icalendar'
 
 

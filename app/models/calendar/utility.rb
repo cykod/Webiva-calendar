@@ -164,7 +164,7 @@ class Calendar::Utility
     start_date = weeks[0][0][:date]
     end_date = weeks[-1][-1][:date]
     bookings = CalendarBooking.find(:all,
-                :conditions => ['(booking_on BETWEEN ? AND ?) AND (confirmed=1 OR valid_until > NOW()) AND end_user_id = ?',start_date,end_date,user.id ]).group_by(&:booking_on)
+                :conditions => ['(booking_on BETWEEN ? AND ?) AND (confirmed=1 OR valid_until > NOW()) AND end_user_id = ?',start_date.to_date,end_date.to_date,user.id ]).group_by(&:booking_on)
                 
     bookings.each do |booking_date,bookings|
       booking_blocks = bookings.collect { |booking| [ booking.start_time,booking.end_time, booking ] }
@@ -220,7 +220,7 @@ class Calendar::Utility
         :conditions => ['start_on <= ? AND (end_on IS NULL OR end_on >= ?) AND 
                        ( (start_time >= ? AND start_time < ?) OR (end_time > ? AND end_time <= ?) OR (start_time <= ? AND end_time >= ? ) )  AND
                           calendar_holiday_slots.calendar_slot_id = ?',
-                        booking_on.to_date,booking_on,start_time,end_time,start_time,end_time,start_time,end_time, slot.id ],
+                        booking_on.to_date,booking_on.to_date,start_time,end_time,start_time,end_time,start_time,end_time, slot.id ],
         :include => :calendar_holiday_slots)
       next if holidays # try next slot if there are holidays in the way
      

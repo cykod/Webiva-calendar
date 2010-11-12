@@ -158,6 +158,10 @@ class Calendar::PageRenderer < ParagraphRenderer
     @visible_year = (display_schedule[0].to_i > 1900) ? display_schedule[0].to_i : current_date.year
     @visible_month = (display_schedule[1].to_i > 0 && display_schedule[1].to_i <= 12) ? display_schedule[1].to_i : current_date.month
     
+    if(@visible_year > current_date.year + 10)
+      raise SiteNodeEngine::MissingPageException.new(nil,nil)
+    end
+
     @visible_date = Time.local(@visible_year,@visible_month,1)
   
     display_string = "#{@visible_year}_#{@visible_month}"

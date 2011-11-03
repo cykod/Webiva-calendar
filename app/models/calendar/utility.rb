@@ -428,6 +428,7 @@ class Calendar::Utility
   
 
   def self.time_str(offset,fmt = nil)
-    (Time.now.at_midnight + offset * 60).strftime((fmt||"%I:%M %p").t)
+    # ( Time.now.at_midnight + offset * 60).strftime((fmt||"%I:%M %p").t)
+    (Time.mktime(2008,01,01).at_midnight + 1.days + offset * 60).strftime((fmt||"%I:%M %p").t)
   end
 end
